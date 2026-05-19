@@ -231,6 +231,17 @@ sum-card.pending::before { background: var(--yellow); }
 .bill-row:hover { border-color: var(--surface3); background: var(--surface2); }
 .bill-row.paid-row { opacity: 0.65; }
 .bill-row.paid-row .bill-name { text-decoration: line-through; }
+.bill-row.inactive-row {
+  opacity: 0.45;
+  filter: grayscale(0.7);
+}
+.bill-row.inactive-row .bill-name {
+  text-decoration: line-through;
+}
+.bill-row.inactive-row .status-toggle {
+  pointer-events: none;
+  opacity: 0.5;
+}
 .bill-info { min-width: 0; }
 .bill-name {
   font-size: 15px;
@@ -565,3 +576,16 @@ select.form-input { cursor: pointer; }
   flex-shrink: 0;
 }
 textarea.form-input { resize: vertical; min-height: 72px; }
+
+@media (max-width: 600px) {
+  main > div[style*="display:flex"] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  main > div[style*="display:flex"] > label,
+  main > div[style*="display:flex"] > button {
+    width: 100%;
+    margin-right: 0 !important;
+  }
+}

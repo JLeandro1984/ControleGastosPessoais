@@ -154,6 +154,7 @@ function saveInvestment() {
 function getActiveBills() {
   const mk = currentMonthKey();
   return state.bills.filter(b => {
+    if (b.active === false) return false;
     if (b.recurrence === 'once') {
       return b.monthKey === mk;
     }
@@ -202,8 +203,9 @@ function renderList(containerId, bills, mk) {
   container.innerHTML = filtered.map(bill => {
     const isPaid = !!state.payments[`${bill.id}_${mk}`];
     const cat = getCategoryLabel(bill.category);
+    const isActive = bill.active !== false;
     return `
-      <div class="bill-row ${isPaid ? 'paid-row' : ''}" id="row-${bill.id}">
+      <div class="bill-row ${isPaid ? 'paid-row' : ''} ${!isActive ? 'inactive-row' : ''}" id="row-${bill.id}">
         <div class="bill-info">
           <div class="bill-name">${escHtml(bill.name)}</div>
           <div class="bill-meta">
@@ -216,8 +218,9 @@ function renderList(containerId, bills, mk) {
         <div class="bill-actions">
           <button class="action-btn edit" onclick="editBill('${bill.id}')" title="Editar">✏️</button>
           <button class="action-btn" onclick="deleteBill('${bill.id}')" title="Excluir">🗑</button>
+          <button class="action-btn" onclick="toggleActiveBill('${bill.id}')" title="${isActive ? 'Desativar' : 'Ativar'}">${isActive ? '🚫' : '✅'}</button>
         </div>
-        <button class="status-toggle ${isPaid ? 'paid' : ''}" onclick="togglePaid('${bill.id}')" title="${isPaid ? 'Marcar como pendente' : 'Marcar como pago'}">
+        <button class="status-toggle ${isPaid ? 'paid' : ''}" onclick="togglePaid('${bill.id}')" title="${isPaid ? 'Marcar como pendente' : 'Marcar como pago'}" ${!isActive ? 'disabled' : ''}>
           ${isPaid ? '✓' : ''}
         </button>
       </div>
@@ -290,6 +293,7 @@ function saveBill() {
       name, day, value, category, recurrence, notes,
       monthKey: currentMonthKey(),
       createdAt: new Date().toISOString(),
+      active: true,
     };
     state.bills.push(bill);
     toast('✅ Conta adicionada!', 'success');
