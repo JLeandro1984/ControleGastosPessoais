@@ -44,5 +44,11 @@ FinTrack é um aplicativo web moderno para controle de contas pessoais, focado e
 - Não há integração com servidores externos.
 - O app pode ser usado offline após o primeiro acesso.
 
+## Novidades e Ajustes Recentes
+
+- Agora é possível **desativar ou ativar** contas cadastradas. Contas desativadas ficam opacas, com texto riscado, não participam dos cálculos e podem ser reativadas a qualquer momento.
+- Adicionado botão de ativar/desativar na lista de contas (ícones 🚫 para desativar e ✅ para ativar).
+- Melhorias na responsividade mobile: o botão "+ Investimento" agora se ajusta corretamente em telas pequenas, ficando abaixo do checkbox e com espaçamento adequado.
+
 ---
 Desenvolvido para facilitar o controle financeiro pessoal de forma simples, visual e acessível em qualquer dispositivo.
