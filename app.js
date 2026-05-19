@@ -4,6 +4,8 @@ let state = {
   bills: [],
   payments: {}, // key: billId_YYYY-MM => true/false
   income: {},   // key: YYYY-MM => value
+  investments: [], // {value, type, date}
+  accumulate: false, // opção de acumular saldo
   currentYear: new Date().getFullYear(),
   currentMonth: new Date().getMonth(), // 0-indexed
 };
@@ -13,11 +15,18 @@ let currentFilter = 'all';
 function init() {
   loadFromStorage();
   renderMonthChips();
+  document.getElementById('accumulateBalance').checked = !!state.accumulate;
   renderAll();
 }
 // ==================== STORAGE ====================
 function saveToStorage() {
   localStorage.setItem('fintrack_v2', JSON.stringify(state));
+}
+
+function toggleAccumulate() {
+  state.accumulate = document.getElementById('accumulateBalance').checked;
+  saveToStorage();
+  renderAll();
 }
 function loadFromStorage() {
   const raw = localStorage.getItem('fintrack_v2');
@@ -81,6 +90,24 @@ function renderSummary() {
     if (isPaid) { paid += val; paidCount++; }
     else { pending += val; pendingCount++; }
   });
+  // Acúmulo de saldo
+  let prevBalance = 0;
+  if (state.accumulate) {
+    const [y, m] = mk.split('-');
+    let prevY = +y, prevM = +m - 1;
+    if (prevM < 1) { prevM = 12; prevY--; }
+    const prevKey = `${prevY}-${String(prevM).padStart(2,'0')}`;
+    const prevIncome = state.income[prevKey] || 0;
+    let prevTotal = 0;
+    (state.bills||[]).forEach(b => {
+      if (b.recurrence === 'once' && b.monthKey !== prevKey) return;
+      if (b.recurrence !== 'once' || b.monthKey === prevKey) {
+        prevTotal += b.value || 0;
+      }
+    });
+    prevBalance = prevIncome - prevTotal;
+    // Acumula saldo anterior
+  }
   document.getElementById('sumTotal').textContent = fmtCurrency(total);
   document.getElementById('sumCount').textContent = `${activeBills.length} conta${activeBills.length !== 1 ? 's' : ''}`;
   document.getElementById('sumPaid').textContent = fmtCurrency(paid);
@@ -88,16 +115,41 @@ function renderSummary() {
   document.getElementById('pendingCount').textContent = `${pendingCount} pendente${pendingCount !== 1 ? 's' : ''}`;
   const pct = total > 0 ? (paid / total) * 100 : 0;
   document.getElementById('progressFill').style.width = pct + '%';
+  let balance = income - total;
+  if (state.accumulate) balance += prevBalance;
   if (income > 0) {
-    const balance = income - total;
     document.getElementById('sumBalance').textContent = fmtCurrency(balance);
     document.getElementById('sumBalance').style.color = balance >= 0 ? 'var(--green)' : 'var(--red)';
-    document.getElementById('balanceDisplay').textContent = fmtCurrency(income - pending);
-    document.getElementById('balanceDisplay').style.color = (income - pending) >= 0 ? 'var(--purple)' : 'var(--red)';
+    let balDisplay = income - pending;
+    if (state.accumulate) balDisplay += prevBalance;
+    document.getElementById('balanceDisplay').textContent = fmtCurrency(balDisplay);
+    document.getElementById('balanceDisplay').style.color = (balDisplay) >= 0 ? 'var(--purple)' : 'var(--red)';
   } else {
     document.getElementById('sumBalance').textContent = '—';
     document.getElementById('balanceDisplay').textContent = '—';
   }
+}
+
+// ========== INVESTIMENTOS ==========
+function openInvestmentModal() {
+  document.getElementById('investmentModal').style.display = 'flex';
+  document.getElementById('inv-value').value = '';
+  document.getElementById('inv-type').value = '';
+  document.getElementById('inv-date').value = '';
+}
+function closeInvestmentModal() {
+  document.getElementById('investmentModal').style.display = 'none';
+}
+function saveInvestment() {
+  const value = parseFloat(document.getElementById('inv-value').value);
+  const type = document.getElementById('inv-type').value;
+  const date = document.getElementById('inv-date').value;
+  if (!value || value <= 0) { toast('Informe um valor válido', 'error'); return; }
+  state.investments.push({ value, type, date });
+  saveToStorage();
+  closeInvestmentModal();
+  renderAll();
+  toast('Investimento cadastrado!', 'success');
 }
 function getActiveBills() {
   const mk = currentMonthKey();
@@ -358,9 +410,13 @@ function showConfirm(title, msg, onConfirm) {
 // ==================== KEYBOARD ====================
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') closeInvestmentModal();
 });
 document.getElementById('modalOverlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeModal();
+});
+document.getElementById('investmentModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeInvestmentModal();
 });
 // ==================== START ====================
 // ========== GRÁFICOS =============
