@@ -301,6 +301,17 @@ function deleteBill(id) {
     }
   );
 }
+
+// ==================== ATIVAR/DESATIVAR ====================
+function toggleActiveBill(id) {
+  const idx = state.bills.findIndex(b => b.id === id);
+  if (idx !== -1) {
+    state.bills[idx].active = state.bills[idx].active === false ? true : false;
+    saveToStorage();
+    renderAll();
+    toast(state.bills[idx].active ? '✅ Conta ativada!' : '🚫 Conta desativada!', state.bills[idx].active ? 'success' : 'info');
+  }
+}
 // ==================== INCOME ====================
 function editIncome() {
   const mk = currentMonthKey();
