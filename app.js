@@ -4,7 +4,7 @@ let state = {
   bills: [],
   payments: {}, // key: billId_YYYY-MM => true/false
   income: {},   // key: YYYY-MM => value
-  investments: [], // {value, type, date}
+  // investments removido
   accumulate: false, // opção de acumular saldo
   currentYear: new Date().getFullYear(),
   currentMonth: new Date().getMonth(), // 0-indexed
@@ -130,27 +130,7 @@ function renderSummary() {
   }
 }
 
-// ========== INVESTIMENTOS ==========
-function openInvestmentModal() {
-  document.getElementById('investmentModal').style.display = 'flex';
-  document.getElementById('inv-value').value = '';
-  document.getElementById('inv-type').value = '';
-  document.getElementById('inv-date').value = '';
-}
-function closeInvestmentModal() {
-  document.getElementById('investmentModal').style.display = 'none';
-}
-function saveInvestment() {
-  const value = parseFloat(document.getElementById('inv-value').value);
-  const type = document.getElementById('inv-type').value;
-  const date = document.getElementById('inv-date').value;
-  if (!value || value <= 0) { toast('Informe um valor válido', 'error'); return; }
-  state.investments.push({ value, type, date });
-  saveToStorage();
-  closeInvestmentModal();
-  renderAll();
-  toast('Investimento cadastrado!', 'success');
-}
+// Funções de investimento removidas
 function getActiveBills() {
   const mk = currentMonthKey();
   return state.bills.filter(b => {
@@ -414,14 +394,11 @@ function showConfirm(title, msg, onConfirm) {
 // ==================== KEYBOARD ====================
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
-  if (e.key === 'Escape') closeInvestmentModal();
 });
 document.getElementById('modalOverlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeModal();
 });
-document.getElementById('investmentModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeInvestmentModal();
-});
+// Listeners de investimento removidos
 // ==================== START ====================
 // ========== GRÁFICOS =============
 let pieChart, barChart;
