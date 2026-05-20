@@ -546,6 +546,17 @@ select.form-input { cursor: pointer; }
   .bill-actions { display: none; }
   .form-row { grid-template-columns: 1fr; }
   .summary-grid { grid-template-columns: 1fr 1fr; }
+  /* Modal responsivo para mobile */
+  .modal {
+    max-width: 98vw;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
+  .modal-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
 }
 .confirm-overlay {
   position: fixed;

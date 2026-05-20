@@ -4,7 +4,7 @@ FinTrack é um aplicativo web moderno para controle de contas pessoais, focado e
 
 ## Funcionalidades
 
-- Cadastro, edição e exclusão de contas mensais
+- Cadastro, edição, ativação/desativação e exclusão de contas mensais
 - Marcação de contas como pagas ou pendentes
 - Filtros por status e vencimento
 - Controle de renda mensal e saldo estimado
